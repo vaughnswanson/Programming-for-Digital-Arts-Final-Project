@@ -17,6 +17,7 @@ def EnemyHealthSpeedGenerator():
             speed += 1
 
     return health, speed
+
 #TODO: give enemys hitboxes
 #TODO: give bullets hitboxes
 #TODO: delete bullet after hitting a freak
@@ -54,3 +55,8 @@ class Bullet():
             self.pos[1] < 0 or self.pos[1] > 600):
             self.alive = False
 
+class Turret():
+    def __init__ (self, pos=(0,0), fire_rate=2):
+        self.pos = pos
+        self.fire_rate = fire_rate  # bullets per second
+        self.last_shot_time = 0
