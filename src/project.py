@@ -22,6 +22,7 @@ def EnemyHealthSpeedGenerator():
 #TODO: give bullets hitboxes
 #TODO: delete bullet after hitting a freak
 #TODO: make bulltets thake away health from freaks
+#TODO: implement main
 
 
 class Freak():
@@ -35,6 +36,10 @@ class Freak():
 
     def update(self):
         if self.health <= 0:
+            self.alive = False
+            # if freak moves off scereen delete it
+        if (self.pos[0] < 0 or self.pos[0] > 800 or
+            self.pos[1] < 0 or self.pos[1] > 600):
             self.alive = False
 
 
@@ -68,4 +73,11 @@ class Turret():
                 self.last_shot_time = current_time
                 return True
         
-        
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    clock = pygame.time.Clock()
+    running = True
+    turret = Turret(pos=(400, 300), fire_rate=2)
+    bullets = []
+    freaks = [Freak(pos=(random.randint(0, 800), random.randint(0, 600))) for _ in range(5)]
