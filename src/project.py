@@ -18,7 +18,7 @@ def EnemyHealthSpeedGenerator():
 
     return health, speed
 
-class Enemy():
+class Freak():
 
     def __init__(self, pos=(0,0)):
         self.pos = pos
@@ -30,3 +30,13 @@ class Enemy():
     def update(self):
         if self.health <= 0:
             self.alive = False
+
+
+class Bullet():
+    def __init__(self, pos=(0,0), direction=(0,0), speed=10):
+        self.pos = pos
+        self.direction = direction
+        self.speed = speed
+        self.alive = True
+
+        
