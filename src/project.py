@@ -60,3 +60,12 @@ class Turret():
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
         self.last_shot_time = 0
+
+    def is_fireing(self, fire_rate):
+        if pygame.MOUSEBUTTONDOWN:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_shot_time >= 2 / fire_rate:
+                self.last_shot_time = current_time
+                return True
+        
+        
