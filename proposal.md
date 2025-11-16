@@ -1,5 +1,5 @@
 # Final Project Proposal
-## Hoarde of Freaks
+## Hoard of Freaks
 
 
 ### Link to GitHub repository
