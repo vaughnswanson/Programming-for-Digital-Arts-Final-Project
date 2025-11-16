@@ -17,6 +17,11 @@ def EnemyHealthSpeedGenerator():
             speed += 1
 
     return health, speed
+#TODO: give enemys hitboxes
+#TODO: give bullets hitboxes
+#TODO: delete bullet after hitting a freak
+#TODO: make bulltets thake away health from freaks
+
 
 class Freak():
 
@@ -39,4 +44,13 @@ class Bullet():
         self.speed = speed
         self.alive = True
 
+    def update(self):
+        # Update bullet position based on direction and speed
+        self.pos = (self.pos[0] + self.direction[0] * self.speed,
+                    self.pos[1] + self.direction[1] * self.speed)
         
+        # Check if bullet is out of bounds ( 800x600 place holder)
+        if (self.pos[0] < 0 or self.pos[0] > 800 or
+            self.pos[1] < 0 or self.pos[1] > 600):
+            self.alive = False
+
