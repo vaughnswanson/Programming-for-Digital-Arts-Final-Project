@@ -10,7 +10,7 @@ def EnemyHealthSpeedGenerator():
     speed = 1
     
     #distribute points randomly between health and speed
-    for _ in EnemyTotalPoints:
+    for _ in range(EnemyTotalPoints):
         if random.choice([True, False]):
             health += 1
         else:
@@ -30,8 +30,14 @@ class Freak():
     def __init__(self, pos=(0,0)):
         self.pos = pos
         self.health, self.speed = EnemyHealthSpeedGenerator()
-        
         self.alive = True
+        
+        #load sprite
+        self.sprite = pygame.image.load("assets/images/freak1.png").convert_alpha()
+        #scale sprite
+        self.sprite = pygame.transform.scale(self.sprite, (1, 1))
+        #give sprite hitbox
+        self.rect = self.sprite.get_rect(topleft=pos)
 
 
     def update(self):
@@ -42,6 +48,9 @@ class Freak():
             self.pos[1] < 0 or self.pos[1] > 600):
             self.alive = False
 
+    def draw(self, screen):
+        #draw freak sprite at its position
+        screen.blit(self.sprite, self.rect.topleft)       
 
 class Bullet():
     def __init__(self, pos=(0,0), direction=(0,0), speed=10):
@@ -78,9 +87,10 @@ def main():
     pygame.init()
 
    
-    pygame.display.set_caption("Hoarde of Freaks")
+    pygame.display.set_caption("Hoard of Freaks")
 
     screen = pygame.display.set_mode((800, 600))
+    screen.fill((0, 0, 0))
     clock = pygame.time.Clock()
     running = True
     turret = Turret(pos=(400, 300), fire_rate=2)
