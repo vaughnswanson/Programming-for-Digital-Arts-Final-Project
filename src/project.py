@@ -10,7 +10,7 @@ def EnemyHealthSpeedGenerator():
     speed = 1
     
     #distribute points randomly between health and speed
-    for points in EnemyTotalPoints:
+    for _ in EnemyTotalPoints:
         if random.choice([True, False]):
             health += 1
         else:
@@ -20,7 +20,7 @@ def EnemyHealthSpeedGenerator():
 
 class Enemy():
 
-    def __init__ (self, pos(0,0), health=1, speed=1):
+    def __init__(self, pos=(0,0)):
         self.pos = pos
         self.health, self.speed = EnemyHealthSpeedGenerator()
         
