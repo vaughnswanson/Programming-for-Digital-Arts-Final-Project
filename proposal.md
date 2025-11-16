@@ -9,7 +9,7 @@ https://github.com/vaughnswanson/Programming-for-Digital-Arts-Final-Project\
 In this game you will defent your self from "freaks" trying to get to you. you play as a turret that shoots the "freaks" as they try to get to you. the game will have waves of enemys that grow as time goes on. It will be a time trial game so the goal is to last as long as you can with the waves comming at you. 
 
 
-![image of freaks for the game](/assets/images/freaks.png)
+![image of freaks for the game](src//assets/images/freaks.png)
 
 
 ### Perspective Features:
@@ -25,7 +25,7 @@ using pixel art to bring the game to life.
 
 I will need to research how to put premade images into the game using py.game 
 
-I will also need to research how to make those images move and rotate and gow to fire bullets based on that rotation 
+I will also need to research how to make those images move and rotate and how to fire bullets based on that rotation 
 
 as well as creating hitboxes and hurt boxes for the bullets and the objects with health. 
 

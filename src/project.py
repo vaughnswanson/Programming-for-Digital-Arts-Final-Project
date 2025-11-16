@@ -46,15 +46,24 @@ class Freak():
     def update(self, dt):
         if self.health <= 0:
             self.alive = False
-
-            # if freak moves off scereen delete it
+        self._update_pos(dt)
+            
+        # if freak moves off scereen delete it
         if (self.pos[0] < 0 or self.pos[0] > 800 or
             self.pos[1] < 0 or self.pos[1] > 600):
             self.alive = False
+        
+        #update rect position
+        self.rect.topleft = self.pos
 
     def draw(self, screen):
         
-        screen.blit(self.sprite, self.rect.topleft)       
+        screen.blit(self.sprite, self.rect.topleft)     
+
+    def _update_pos(self, dt):
+        x,y = self.pos
+        x -= self.speed * dt * 15
+        self.pos = (x,y)  
 
 class Bullet():
     def __init__(self, pos=(0,0), direction=(0,0), speed=10):
@@ -98,7 +107,7 @@ def main():
     
     clock = pygame.time.Clock()
     running = True
-    freaks = [Freak(pos=(random.randint(0, 800), random.randint(0, 600))) for _ in range(5)]
+    freaks = [Freak(pos=(800, random.randint(0, 550))) for _ in range(5)]
  
     while running :
         #set delta time
