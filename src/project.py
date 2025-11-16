@@ -74,10 +74,25 @@ class Turret():
                 return True
         
 def main():
+    #initalise pygame
     pygame.init()
+
+   
+    pygame.display.set_caption("Hoarde of Freaks")
+
     screen = pygame.display.set_mode((800, 600))
     clock = pygame.time.Clock()
     running = True
     turret = Turret(pos=(400, 300), fire_rate=2)
     bullets = []
     freaks = [Freak(pos=(random.randint(0, 800), random.randint(0, 600))) for _ in range(5)]
+ 
+    while running :
+        #event loop
+        for event in pygame.event.get():
+            #use quit to close program
+            if event.type == pygame.QUIT:
+                running = False
+
+if __name__ == "__main__":
+    main()
