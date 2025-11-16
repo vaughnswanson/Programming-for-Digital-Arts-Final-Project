@@ -18,6 +18,9 @@ def EnemyHealthSpeedGenerator():
 
     return health, speed
 
+def pick_freak():
+    num = random.randrange(1,6)
+    return f"freak{num}.png"
 #TODO: give enemys hitboxes
 #TODO: give bullets hitboxes
 #TODO: delete bullet after hitting a freak
@@ -33,7 +36,7 @@ class Freak():
         self.alive = True
         
         #load sprite
-        self.sprite = pygame.image.load("assets/images/freak1.png").convert_alpha()
+        self.sprite = pygame.image.load(f"assets/images/{pick_freak()}").convert_alpha()
         #scale sprite
         self.sprite = pygame.transform.scale(self.sprite, (50, 50))
         #give sprite hitbox
