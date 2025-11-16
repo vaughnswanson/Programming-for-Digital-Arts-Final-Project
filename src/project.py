@@ -50,8 +50,7 @@ class Freak():
             self.alive = False
 
     def draw(self, screen):
-        pygame.draw.rect(screen, (255,0,0), self.rect)
-        #draw freak sprite at its position
+        
         screen.blit(self.sprite, self.rect.topleft)       
 
 class Bullet():
