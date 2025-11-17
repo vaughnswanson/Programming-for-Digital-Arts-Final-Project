@@ -38,7 +38,7 @@ class Freak():
         #load sprite
         self.sprite = pygame.image.load(f"assets/images/{pick_freak()}").convert_alpha()
         #scale sprite
-        self.sprite = pygame.transform.scale(self.sprite, (50, 50))
+        self.sprite = pygame.transform.scale(self.sprite, (96,96))
         #give sprite hitbox
         self.rect = self.sprite.get_rect(topleft=pos)
         
@@ -138,7 +138,7 @@ def main():
         while freak_spawn_timer >= 1 / freak_spawn_rate:
             freak_spawn_timer -= 1 / freak_spawn_rate       
 
-            y = random.choice(range(0, resolution[1]-50, 50))
+            y = random.choice(range(0, resolution[1]-96,96))
             freaks.append(Freak(pos=(resolution[0], y)))
 
 
