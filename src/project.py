@@ -117,7 +117,9 @@ def main():
     freak_spawn_rate = .5  # freaks per second
     #spawn freak at random y position on right side of screen
     freaks = []
- 
+    background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
+    background = pygame.transform.scale(background, resolution)
+
     while running :
         #set delta time
         dt = clock.tick(60) / 1000 
@@ -126,7 +128,8 @@ def main():
             #use quit to close program
             if event.type == pygame.QUIT:
                 running = False
-        screen.fill((0, 0, 0))
+        screen.blit(background, (0,0))
+        
         #update freaks
         for freak in freaks:
             freak.update(dt)
