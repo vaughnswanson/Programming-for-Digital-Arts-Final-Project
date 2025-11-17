@@ -50,8 +50,8 @@ class Freak():
         self._update_pos(dt)
             
         # if freak moves off scereen delete it
-        if (self.pos[0] < 0 or self.pos[0] > 800 or
-            self.pos[1] < 0 or self.pos[1] > 600):
+        if self.pos[0] <= 0:
+           
             self.alive = False
         
         #update rect position
@@ -106,12 +106,13 @@ def main():
    
     pygame.display.set_caption("Hoard of Freaks")
 
-    screen = pygame.display.set_mode((800, 600))
-    screen.fill((0, 0, 0))
+
+  
     
     clock = pygame.time.Clock()
     running = True
-
+    resolution = (1920,1080)
+    screen = pygame.display.set_mode((resolution))
     freak_spawn_timer = 0
     freak_spawn_rate = .5  # freaks per second
     #spawn freak at random y position on right side of screen
@@ -133,7 +134,10 @@ def main():
         freak_spawn_timer += dt
         while freak_spawn_timer >= 1 / freak_spawn_rate:
             freak_spawn_timer -= 1 / freak_spawn_rate       
-            freaks.append(Freak(pos=(800, random.randint(0, 550))))
+
+            y = random.choice(range(0, resolution[1]-50, 50))
+            freaks.append(Freak(pos=(resolution[0], y)))
+
 
         #delete dead freaks
         freaks = [freak for freak in freaks if freak.alive]
