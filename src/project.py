@@ -41,7 +41,8 @@ class Freak():
         self.sprite = pygame.transform.scale(self.sprite, (50, 50))
         #give sprite hitbox
         self.rect = self.sprite.get_rect(topleft=pos)
-
+        
+        self.spawn_rate = .5  # freaks per second
 
     def update(self, dt):
         if self.health <= 0:
@@ -55,6 +56,9 @@ class Freak():
         
         #update rect position
         self.rect.topleft = self.pos
+
+
+
 
     def draw(self, screen):
         
@@ -107,7 +111,11 @@ def main():
     
     clock = pygame.time.Clock()
     running = True
-    freaks = [Freak(pos=(800, random.randint(0, 550))) for _ in range(5)]
+
+    freak_spawn_timer = 0
+    freak_spawn_rate = .5  # freaks per second
+    #spawn freak at random y position on right side of screen
+    freaks = []
  
     while running :
         #set delta time
@@ -122,7 +130,11 @@ def main():
         for freak in freaks:
             freak.update(dt)
 
-        
+        freak_spawn_timer += dt
+        while freak_spawn_timer >= 1 / freak_spawn_rate:
+            freak_spawn_timer -= 1 / freak_spawn_rate       
+            freaks.append(Freak(pos=(800, random.randint(0, 550))))
+
         #delete dead freaks
         freaks = [freak for freak in freaks if freak.alive]
 
