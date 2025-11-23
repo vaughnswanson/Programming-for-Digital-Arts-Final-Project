@@ -77,7 +77,13 @@ class Bullet():
         self.direction = direction
         self.speed = speed
         self.alive = True
-
+        #load sprite
+        self.sprite = pygame.image.load(f"assets/images/bullet.png").convert_alpha()
+        #scale sprite
+        self.sprite = pygame.transform.scale(self.sprite, (32,32))
+        #give sprite hitbox 
+        self.rect = self.sprite.get_rect(topleft=pos)
+        
     def update(self, dt, resolution):
         # Update bullet position based on direction and speed
         self.pos = (self.pos[0] + self.direction[0] * self.speed*dt,
@@ -103,7 +109,7 @@ class Turret():
         self.sprite = pygame.transform.scale(self.sprite, (96,96))
         self.sprite2 = pygame.image.load(f"assets/images/turret_housing.png").convert_alpha()
         self.sprite2 = pygame.transform.scale(self.sprite2, (96,96))
-        
+
     def is_fireing(self, fire_rate):
         if pygame.MOUSEBUTTONDOWN:
             current_time = pygame.time.get_ticks()
@@ -149,6 +155,7 @@ def main():
     freak_spawn_rate = .5  # freaks per second
     #spawn freak at random y position on right side of screen
     freaks = []
+    bullets = []
     #background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
     #make the background black
     background = pygame.Surface(resolution)
