@@ -186,9 +186,10 @@ def main():
                 turret_x, turret_y = turret.pos
                 angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
                 direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-                bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
+                bullet = Bullet(pos=turret.pos, direction=direction, speed=2000)
                 bullets.append(bullet)
-                winsound.PlaySound(pick_audio("assets/sounds/shoot",3,"wav"), winsound.SND_ASYNC)
+                active_audio_fire = pick_audio("src/assets/audio/fire", 3, "wav")
+                winsound.PlaySound(active_audio_fire, winsound.SND_FILENAME | winsound.SND_ASYNC)
             
         screen.blit(background, (0,0))
 
