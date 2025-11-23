@@ -1,10 +1,11 @@
 import pygame
 import random
 import math
+import winsound
 
 def EnemyHealthSpeedGenerator():
     #give enemy random skill points from 1 to 5
-    EnemyTotalPoints = random.randint(1, 5)
+    EnemyTotalPoints = random.randint(1, 8)
     
     #set base speed and health
     health = 1
@@ -22,12 +23,10 @@ def EnemyHealthSpeedGenerator():
 def pick_freak():
     num = random.randrange(1,6)
     return f"freak{num}.png"
-#TODO: give enemys hitboxes
-#TODO: give bullets hitboxes
-#TODO: delete bullet after hitting a freak
-#TODO: make bulltets thake away health from freaks
 
-
+def pick_audio(filename,filenum_range, ext):
+    num = random.randrange(1,filenum_range +1)
+    return f"{filename}{num}.{ext}"
 
 class Freak():
 
@@ -83,8 +82,7 @@ class Bullet():
         self.sprite = pygame.transform.scale(self.sprite, (32,32))
         #give sprite hitbox 
         self.rect = self.sprite.get_rect(topleft=pos)
-       
-       
+            
     def update(self, dt, resolution):
         # Update bullet position based on direction and speed
         self.pos += (self.direction * self.speed * dt)
@@ -104,7 +102,7 @@ class Turret():
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
         self.shot_timer = 0 # time since last shot
-        self.cooldown = 1 / fire_rate # seconds between shots
+        self.cooldown = .5 / fire_rate # seconds between shots
       
         self.last_shot_time = 0
         #load sprite
@@ -125,7 +123,6 @@ class Turret():
             return True
         return False
 
-
     def draw(self, screen):
         #draw the turret rotated to face the mouse
         rotated_sprite = pygame.transform.rotate(self.sprite, -self.rotation)
@@ -133,15 +130,15 @@ class Turret():
         #draw the turret housing
         screen.blit(self.sprite2, self.sprite2.get_rect(center=self.pos))
     
-    #update turret to face mouse
+    
     def update(self, dt):
+        #update turret to face mouse
         self.shot_timer += dt
-         #get mouse position    
+        #get mouse position    
         mouse_x, mouse_y = pygame.mouse.get_pos()
         turret_x, turret_y = self.pos
         angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
         self.rotation = math.degrees(angle)
-
 
 def main():
     #initalise pygame
@@ -158,7 +155,7 @@ def main():
     resolution = (1920,1080)
     screen = pygame.display.set_mode((resolution))
     freak_spawn_timer = 0
-    freak_spawn_rate = .5  # freaks per second
+    freak_spawn_rate = 1  # freaks per second
     #spawn freak at random y position on right side of screen
     freaks = []
     bullets = []
@@ -179,16 +176,19 @@ def main():
             #use quit to close program
             if event.type == pygame.QUIT:
                 running = False 
-            #check if mouse button is pressed
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if turret.can_fire():
-                    #fire bullet
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-                    turret_x, turret_y = turret.pos
-                    angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
-                    direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-                    bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
-                    bullets.append(bullet)
+        #check if mouse button is pressed
+        mouse_buttons = pygame.mouse.get_pressed()
+        #check if left mouse button is pressed
+        if mouse_buttons[0]: 
+            if turret.can_fire():
+                #fire bullet
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                turret_x, turret_y = turret.pos
+                angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
+                direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+                bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
+                bullets.append(bullet)
+                winsound.PlaySound(pick_audio("assets/sounds/shoot",3,"wav"), winsound.SND_ASYNC)
             
         screen.blit(background, (0,0))
 
