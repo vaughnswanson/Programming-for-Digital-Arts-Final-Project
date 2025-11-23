@@ -45,6 +45,7 @@ class Freak():
         self.spawn_rate = .5  # freaks per second
 
     def update(self, dt):
+        #delete the freak if its health falls to 0 or below
         if self.health <= 0:
             self.alive = False
         self._update_pos(dt)
@@ -117,7 +118,10 @@ def main():
     freak_spawn_rate = .5  # freaks per second
     #spawn freak at random y position on right side of screen
     freaks = []
-    background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
+    #background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
+    #make the background black
+    background = pygame.Surface(resolution)
+    background.fill((0, 0, 0))
     background = pygame.transform.scale(background, resolution)
 
     while running :
