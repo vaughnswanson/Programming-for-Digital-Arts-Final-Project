@@ -83,7 +83,8 @@ class Bullet():
         self.sprite = pygame.transform.scale(self.sprite, (32,32))
         #give sprite hitbox 
         self.rect = self.sprite.get_rect(topleft=pos)
-
+       
+       
     def update(self, dt, resolution):
         # Update bullet position based on direction and speed
         self.pos += (self.direction * self.speed * dt)
@@ -96,12 +97,15 @@ class Bullet():
     
     def draw(self, screen):
         
-        screen.blit(self.sprite, self.rect.center) 
+        screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
     def __init__ (self, pos=(0,0), fire_rate=2,):
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
+        self.shot_timer = 0 # time since last shot
+        self.cooldown = 1 / fire_rate # seconds between shots
+      
         self.last_shot_time = 0
         #load sprite
         self.sprite = pygame.image.load(f"assets/images/turret.png").convert_alpha()
@@ -115,6 +119,12 @@ class Turret():
         self.pos = (50 , resolution[1]//2)
         self.rect = self.sprite.get_rect(center=self.pos)
 
+    def can_fire(self):
+        if self.shot_timer >= self.cooldown:
+            self.shot_timer = 0
+            return True
+        return False
+
 
     def draw(self, screen):
         #draw the turret rotated to face the mouse
@@ -125,6 +135,8 @@ class Turret():
     
     #update turret to face mouse
     def update(self, dt):
+        self.shot_timer += dt
+         #get mouse position    
         mouse_x, mouse_y = pygame.mouse.get_pos()
         turret_x, turret_y = self.pos
         angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
@@ -166,24 +178,21 @@ def main():
         for event in pygame.event.get():
             #use quit to close program
             if event.type == pygame.QUIT:
-                running = False
+                running = False 
+            #check if mouse button is pressed
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if turret.can_fire():
+                    #fire bullet
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+                    turret_x, turret_y = turret.pos
+                    angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
+                    direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+                    bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
+                    bullets.append(bullet)
+            
         screen.blit(background, (0,0))
 
-        #check if mouse button is pressed
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            #fire bullet
-            mouse_x, mouse_y = pygame.mouse.get_pos()
-            turret_x, turret_y = turret.pos
-            angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
-            direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-            bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
-            bullets.append(bullet)
-        
-
-        #update turret
-        turret.update(dt)
-        turret.draw(screen)
-        
+       
         #update bullets
         for bullet in bullets:
             bullet.update(dt, resolution)
@@ -194,6 +203,14 @@ def main():
                 if bullet.rect.colliderect(freak.rect):
                     freak.health -= 1
                     bullet.alive = False
+        #delete dead bullets
+        bullets = [bullet for bullet in bullets if bullet.alive]
+
+        #update turret
+        turret.update(dt)
+        turret.draw(screen)
+        
+
 
         #update freaks
         for freak in freaks:
