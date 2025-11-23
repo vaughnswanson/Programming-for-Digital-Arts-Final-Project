@@ -26,7 +26,7 @@ def pick_freak():
 #TODO: give bullets hitboxes
 #TODO: delete bullet after hitting a freak
 #TODO: make bulltets thake away health from freaks
-#TODO: implement main
+
 
 
 class Freak():
@@ -83,20 +83,20 @@ class Bullet():
         self.sprite = pygame.transform.scale(self.sprite, (32,32))
         #give sprite hitbox 
         self.rect = self.sprite.get_rect(topleft=pos)
-        
+
     def update(self, dt, resolution):
         # Update bullet position based on direction and speed
-        self.pos = (self.pos[0] + self.direction[0] * self.speed*dt,
-                    self.pos[1] + self.direction[1] * self.speed*dt)
+        self.pos += (self.direction * self.speed * dt)
+        self.rect.center = self.pos
         
-        # Check if bullet is out of bounds
+        # Check if bullet is out of bounds and mark it as not alive
         if (self.pos[0] < 0 or self.pos[0] > resolution[0]or
             self.pos[1] < 0 or self.pos[1] > resolution[1]):
             self.alive = False
     
     def draw(self, screen):
         
-        screen.blit(self.sprite, self.rect.topleft) 
+        screen.blit(self.sprite, self.rect.center) 
 
 class Turret():
     def __init__ (self, pos=(0,0), fire_rate=2,):
@@ -110,12 +110,6 @@ class Turret():
         self.sprite2 = pygame.image.load(f"assets/images/turret_housing.png").convert_alpha()
         self.sprite2 = pygame.transform.scale(self.sprite2, (96,96))
 
-    def is_fireing(self, fire_rate):
-        if pygame.MOUSEBUTTONDOWN:
-            current_time = pygame.time.get_ticks()
-            if current_time - self.last_shot_time >= 2 / fire_rate:
-                self.last_shot_time = current_time
-                return True
     
     def position(self, resolution):
         self.pos = (50 , resolution[1]//2)
@@ -174,9 +168,32 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.blit(background, (0,0))
-        #updyate turret
+
+        #check if mouse button is pressed
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            #fire bullet
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            turret_x, turret_y = turret.pos
+            angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
+            direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+            bullet = Bullet(pos=turret.pos, direction=direction, speed=500)
+            bullets.append(bullet)
+        
+
+        #update turret
         turret.update(dt)
         turret.draw(screen)
+        
+        #update bullets
+        for bullet in bullets:
+            bullet.update(dt, resolution)
+            bullet.draw(screen)
+            
+            #check for collision with freaks
+            for freak in freaks:
+                if bullet.rect.colliderect(freak.rect):
+                    freak.health -= 1
+                    bullet.alive = False
 
         #update freaks
         for freak in freaks:
