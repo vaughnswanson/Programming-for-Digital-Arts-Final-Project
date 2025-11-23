@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 def EnemyHealthSpeedGenerator():
     #give enemy random skill points from 1 to 5
@@ -77,29 +78,59 @@ class Bullet():
         self.speed = speed
         self.alive = True
 
-    def update(self, dt):
+    def update(self, dt, resolution):
         # Update bullet position based on direction and speed
         self.pos = (self.pos[0] + self.direction[0] * self.speed*dt,
                     self.pos[1] + self.direction[1] * self.speed*dt)
         
-        # Check if bullet is out of bounds ( 800x600 place holder)
-        if (self.pos[0] < 0 or self.pos[0] > 800 or
-            self.pos[1] < 0 or self.pos[1] > 600):
+        # Check if bullet is out of bounds
+        if (self.pos[0] < 0 or self.pos[0] > resolution[0]or
+            self.pos[1] < 0 or self.pos[1] > resolution[1]):
             self.alive = False
+    
+    def draw(self, screen):
+        
+        screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
-    def __init__ (self, pos=(0,0), fire_rate=2):
+    def __init__ (self, pos=(0,0), fire_rate=2,):
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
         self.last_shot_time = 0
-
+        #load sprite
+        self.sprite = pygame.image.load(f"assets/images/turret.png").convert_alpha()
+        #scale sprite
+        self.sprite = pygame.transform.scale(self.sprite, (96,96))
+        self.sprite2 = pygame.image.load(f"assets/images/turret_housing.png").convert_alpha()
+        self.sprite2 = pygame.transform.scale(self.sprite2, (96,96))
+        
     def is_fireing(self, fire_rate):
         if pygame.MOUSEBUTTONDOWN:
             current_time = pygame.time.get_ticks()
             if current_time - self.last_shot_time >= 2 / fire_rate:
                 self.last_shot_time = current_time
                 return True
-        
+    
+    def position(self, resolution):
+        self.pos = (50 , resolution[1]//2)
+        self.rect = self.sprite.get_rect(center=self.pos)
+
+
+    def draw(self, screen):
+        #draw the turret rotated to face the mouse
+        rotated_sprite = pygame.transform.rotate(self.sprite, -self.rotation)
+        screen.blit(rotated_sprite, rotated_sprite.get_rect(center=self.pos))
+        #draw the turret housing
+        screen.blit(self.sprite2, self.sprite2.get_rect(center=self.pos))
+    
+    #update turret to face mouse
+    def update(self, dt):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        turret_x, turret_y = self.pos
+        angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
+        self.rotation = math.degrees(angle)
+
+
 def main():
     #initalise pygame
     pygame.init()
@@ -123,6 +154,9 @@ def main():
     background = pygame.Surface(resolution)
     background.fill((0, 0, 0))
     background = pygame.transform.scale(background, resolution)
+    #create turret
+    turret = Turret()
+    turret.position(resolution) 
 
     while running :
         #set delta time
@@ -133,15 +167,20 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
         screen.blit(background, (0,0))
-        
+        #updyate turret
+        turret.update(dt)
+        turret.draw(screen)
+
         #update freaks
         for freak in freaks:
             freak.update(dt)
 
+        #spawn freaks
         freak_spawn_timer += dt
         while freak_spawn_timer >= 1 / freak_spawn_rate:
             freak_spawn_timer -= 1 / freak_spawn_rate       
-
+            
+            #spawn freak at random y position on right side of screen
             y = random.choice(range(0, resolution[1]-96,96))
             freaks.append(Freak(pos=(resolution[0], y)))
 
