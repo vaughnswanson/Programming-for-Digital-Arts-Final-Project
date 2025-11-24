@@ -1,7 +1,8 @@
 import pygame
 import random
 import math
-import winsound
+import os
+
 
 def EnemyHealthSpeedGenerator():
     #give enemy random skill points from 1 to 5
@@ -24,9 +25,14 @@ def pick_freak():
     num = random.randrange(1,6)
     return f"freak{num}.png"
 
-def pick_audio(filename,filenum_range, ext):
-    num = random.randrange(1,filenum_range +1)
-    return f"{filename}{num}.{ext}"
+
+def pick_audio(filename, filenum_range):
+
+    num = random.randrange(1, filenum_range + 1)
+    
+    file_path = f"assets/audio/{filename}{num}"
+    
+    return file_path
 
 class Freak():
 
@@ -188,8 +194,8 @@ def main():
                 direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
                 bullet = Bullet(pos=turret.pos, direction=direction, speed=2000)
                 bullets.append(bullet)
-                active_audio_fire = pick_audio("src/assets/audio/fire", 3, "wav")
-                winsound.PlaySound(active_audio_fire, winsound.SND_FILENAME | winsound.SND_ASYNC)
+                active_audio_fire = pick_audio("fire", 3)
+                pygame.mixer.Sound(active_audio_fire).play()
             
         screen.blit(background, (0,0))
 
