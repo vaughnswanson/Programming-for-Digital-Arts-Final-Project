@@ -1,12 +1,12 @@
 import pygame
 import random
 import math
-import os
+
 
 
 def EnemyHealthSpeedGenerator():
     #give enemy random skill points from 1 to 5
-    EnemyTotalPoints = random.randint(1, 8)
+    EnemyTotalPoints = random.randint(1, 12)
     
     #set base speed and health
     health = 1
@@ -104,7 +104,7 @@ class Bullet():
         screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
-    def __init__ (self, pos=(0,0), fire_rate=2,):
+    def __init__ (self, pos=(0,0), fire_rate=5,):
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
         self.shot_timer = 0 # time since last shot
@@ -161,7 +161,7 @@ def main():
     resolution = (1920,1080)
     screen = pygame.display.set_mode((resolution))
     freak_spawn_timer = 0
-    freak_spawn_rate = 1  # freaks per second
+    freak_spawn_rate = 2  # freaks per second
     #spawn freak at random y position on right side of screen
     freaks = []
     bullets = []
@@ -210,6 +210,13 @@ def main():
                 if bullet.rect.colliderect(freak.rect):
                     freak.health -= 1
                     bullet.alive = False
+                    if freak.health > 0:
+                        active_audio_hurt = pick_audio("hurt", 3)
+                        pygame.mixer.Sound(active_audio_hurt).play()
+                    else:
+                        active_audio_death = pick_audio("die", 3)
+                        pygame.mixer.Sound(active_audio_death).play()
+
         #delete dead bullets
         bullets = [bullet for bullet in bullets if bullet.alive]
 
