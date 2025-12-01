@@ -2,7 +2,7 @@ import pygame
 import random
 import math
 
-#TODO Implement loose screen when freaks reach the left side of the screen
+
 #TODO restart when player hits enter on loose screen
 #TODO Implement score system based on number of freaks killed
 #TODO Implement levels with increasing freak spawn rates and speeds
@@ -62,13 +62,8 @@ class Freak():
         if self.health <= 0:
             self.alive = False
         self._update_pos(dt)
-            
-        # if freak moves off scereen delete it
-        if self.pos[0] <= 0:
-           
-            self.alive = False
-            
-            pygame.mixer.Sound("assets/audio/lose").play()
+
+       
         #update rect position
         self.rect.topleft = self.pos
 
@@ -168,103 +163,136 @@ def main():
         bullets = []
         freak_spawn_timer = 0
         game_state = 1
-        
+
   
     
     clock = pygame.time.Clock()
     running = True
     resolution = (1920,1080)
     screen = pygame.display.set_mode((resolution))
-    freak_spawn_timer = 0
-    freak_spawn_rate = 2  # freaks per second
+    
     #spawn freak at random y position on right side of screen
+    freak_spawn_rate = 2  # freaks per second
+    freak_spawn_timer = 0
     freaks = []
-    bullets = []
+    
     #background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
+    
     #make the background black
     background = pygame.Surface(resolution)
     background.fill((0, 0, 0))
     background = pygame.transform.scale(background, resolution)
+    
     #create turret
     turret = Turret()
     turret.position(resolution) 
+    bullets = []
+
+    #health stats
+    health = 1
+
 
     while running :
-        #set delta time
-        dt = clock.tick(60) / 1000 
-        #event loop
-        for event in pygame.event.get():
-            #use quit to close program
-            if event.type == pygame.QUIT:
-                running = False 
-        #check if mouse button is pressed
-        mouse_buttons = pygame.mouse.get_pressed()
-        #check if left mouse button is pressed
-        if mouse_buttons[0]: 
-            if turret.can_fire():
-                #fire bullet
-                mouse_x, mouse_y = pygame.mouse.get_pos()
-                turret_x, turret_y = turret.pos
-                angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
-                direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-                bullet = Bullet(pos=turret.pos, direction=direction, speed=2000)
-                bullets.append(bullet)
-                active_audio_fire = pick_audio("fire", 3)
-                pygame.mixer.Sound(active_audio_fire).play()
+        if game_state == 1:
+                #set delta time
+                dt = clock.tick(60) / 1000 
             
-        screen.blit(background, (0,0))
+                #event loop
+                for event in pygame.event.get():
+                    #use quit to close program
+                    if event.type == pygame.QUIT:
+                        running = False 
+                
+                #check if mouse button is pressed
+                mouse_buttons = pygame.mouse.get_pressed()
+                
+                #check if left mouse button is pressed
+                if mouse_buttons[0]: 
+                    if turret.can_fire():
+                        #fire bullet
+                        mouse_x, mouse_y = pygame.mouse.get_pos()
+                        turret_x, turret_y = turret.pos
+                        angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
+                        direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
+                        bullet = Bullet(pos=turret.pos, direction=direction, speed=2000)
+                        bullets.append(bullet)
+                        active_audio_fire = pick_audio("fire", 3)
+                        pygame.mixer.Sound(active_audio_fire).play()
+                    
+                screen.blit(background, (0,0))
 
-       
-        #update bullets
-        for bullet in bullets:
-            bullet.update(dt, resolution)
-            bullet.draw(screen)
             
-            #check for collision with freaks
-            for freak in freaks:
-                if bullet.rect.colliderect(freak.rect):
-                    freak.health -= 1
-                    bullet.alive = False
-                    if freak.health > 0:
-                        active_audio_hurt = pick_audio("hurt", 3)
-                        pygame.mixer.Sound(active_audio_hurt).play()
-                    else:
-                        active_audio_death = pick_audio("die", 3)
-                        pygame.mixer.Sound(active_audio_death).play()
+                #update bullets
+                for bullet in bullets:
+                    bullet.update(dt, resolution)
+                    bullet.draw(screen)
+                    
+                    #check for collision with freaks
+                    for freak in freaks:
+                        if bullet.rect.colliderect(freak.rect):
+                            freak.health -= 1
+                            bullet.alive = False 
+                            if freak.health > 0:
+                                active_audio_hurt = pick_audio("hurt", 3)
+                                pygame.mixer.Sound(active_audio_hurt).play()
+                            else:
+                                active_audio_death = pick_audio("die", 3)
+                                pygame.mixer.Sound(active_audio_death).play()
 
-        #delete dead bullets
-        bullets = [bullet for bullet in bullets if bullet.alive]
+                #delete dead bullets
+                bullets = [bullet for bullet in bullets if bullet.alive]
 
-        #update turret
-        turret.update(dt)
-        turret.draw(screen)
+                #update turret
+                turret.update(dt)
+                turret.draw(screen)
+                
+
+
+                #update freaks
+                for freak in freaks:
+                    freak.update(dt)
+                    
+                    if freak.pos[0] <= 0:
+                        health -= 1
+                        pygame.mixer.Sound("assets/audio/lose").play()
+                        freak.alive = False
+
+                        if health <= 0:
+                            game_state = 0
+                        
+                        
+
+                #spawn freaks
+                freak_spawn_timer += dt
+                while freak_spawn_timer >= 1 / freak_spawn_rate:
+                    freak_spawn_timer -= 1 / freak_spawn_rate       
+                    
+                    #spawn freak at random y position on right side of screen
+                    y = random.choice(range(0, resolution[1]-96,96))
+                    freaks.append(Freak(pos=(resolution[0], y)))
+
+
+                #delete dead freaks
+                freaks = [freak for freak in freaks if freak.alive]
+
+                #draw freaks
+                for freak in freaks:
+                    freak.draw(screen)
+
+                pygame.display.flip()
+        elif game_state == 0:
         
-
-
-        #update freaks
-        for freak in freaks:
-            freak.update(dt)
-
-        #spawn freaks
-        freak_spawn_timer += dt
-        while freak_spawn_timer >= 1 / freak_spawn_rate:
-            freak_spawn_timer -= 1 / freak_spawn_rate       
-            
-            #spawn freak at random y position on right side of screen
-            y = random.choice(range(0, resolution[1]-96,96))
-            freaks.append(Freak(pos=(resolution[0], y)))
-
-
-        #delete dead freaks
-        freaks = [freak for freak in freaks if freak.alive]
-
-        #draw freaks
-        for freak in freaks:
-            freak.draw(screen)
-
-        pygame.display.flip()
-        
-        
+            background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
+            screen.blit(background, (0,0))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                if game_state == 0 and event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        game_state = 1
+                        reset_game()
+                        health = 1
+                pygame.display.flip()
 
 if __name__ == "__main__":
     main()
