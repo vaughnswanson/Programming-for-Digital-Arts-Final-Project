@@ -165,20 +165,33 @@ def main():
         game_state = 1
         clock.tick()  # Reset clock to avoid large dt on restart
 
-  
+    #keep track of freaks killed
+    freaks_killed = 0
+
+    #keep track of bullets fired
+    bullets_fired = 0
+    
+    #keep track of hits
+    hits = 0
+    
+    #keep track of accuracy
+    accuracy = 0
+
+    #keep track of seconds survived
+    seconds_survived = 0
+
     
     clock = pygame.time.Clock()
     running = True
     resolution = (1920,1080)
     screen = pygame.display.set_mode((resolution))
     
-    #spawn freak at random y position on right side of screen
-    freak_spawn_rate = 2  # freaks per second
+        
+    
     freak_spawn_timer = 0
     freaks = []
     
-    #background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
-    
+   
     #make the background black
     background = pygame.Surface(resolution)
     background.fill((0, 0, 0))
@@ -197,7 +210,7 @@ def main():
         if game_state == 1:
                 #set delta time
                 dt = clock.tick(60) / 1000 
-
+                seconds_survived += dt
                 #set background
                 background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
                 #event loop
@@ -267,14 +280,14 @@ def main():
 
                 #spawn freaks
                 freak_spawn_timer += dt
+                freak_spawn_rate = 0.5 + (seconds_survived // 10) * 0.1  # Increase spawn rate every 10 seconds
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
                     
                     #spawn freak at random y position on right side of screen
                     y = random.choice(range(0, resolution[1]-96,96))
                     freaks.append(Freak(pos=(resolution[0], y)))
-
-
+                
                 #delete dead freaks
                 freaks = [freak for freak in freaks if freak.alive]
 
