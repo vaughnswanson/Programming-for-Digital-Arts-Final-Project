@@ -196,7 +196,9 @@ def main():
         if game_state == 1:
                 #set delta time
                 dt = clock.tick(60) / 1000 
-            
+
+                #set background
+                background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
                 #event loop
                 for event in pygame.event.get():
                     #use quit to close program
