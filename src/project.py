@@ -158,13 +158,15 @@ def main():
     pygame.display.set_caption("Hoard of Freaks")
 
     def reset_game():
-        nonlocal freaks, bullets, freak_spawn_timer, game_state
+        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate
         freaks = []
         bullets = []
-        freak_spawn_timer = 0
+        seconds_survived = 0
         game_state = 1
         clock.tick()  # Reset clock to avoid large dt on restart
-
+        freak_spawn_rate = 0.5
+        
+        freak_spawn_timer = 0
     #keep track of freaks killed
     freaks_killed = 0
 
@@ -187,7 +189,7 @@ def main():
     screen = pygame.display.set_mode((resolution))
     
         
-    
+    #freak spawn timer
     freak_spawn_timer = 0
     freaks = []
     
