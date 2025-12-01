@@ -2,7 +2,14 @@ import pygame
 import random
 import math
 
-
+#TODO Implement loose screen when freaks reach the left side of the screen
+#TODO restart when player hits enter on loose screen
+#TODO Implement score system based on number of freaks killed
+#TODO Implement levels with increasing freak spawn rates and speeds
+# luxuary TODOs:
+#TODO Implement turret upgrade system
+#TODO add live score of freaks killed on screen
+#TODO add live timer on screen
 
 def EnemyHealthSpeedGenerator():
     #give enemy random skill points from 1 to 5
@@ -60,7 +67,8 @@ class Freak():
         if self.pos[0] <= 0:
            
             self.alive = False
-        
+            
+            pygame.mixer.Sound("assets/audio/lose").play()
         #update rect position
         self.rect.topleft = self.pos
 
