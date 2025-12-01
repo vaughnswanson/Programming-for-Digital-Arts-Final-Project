@@ -163,6 +163,7 @@ def main():
         bullets = []
         freak_spawn_timer = 0
         game_state = 1
+        clock.tick()  # Reset clock to avoid large dt on restart
 
   
     
@@ -282,8 +283,10 @@ def main():
                     freak.draw(screen)
 
                 pygame.display.flip()
+
         elif game_state == 0:
-        
+            
+            clock.tick(60)
             background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
             screen.blit(background, (0,0))
             for event in pygame.event.get():
