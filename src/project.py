@@ -158,10 +158,17 @@ def main():
     #initalise pygame
     pygame.init()
 
-   
+    game_state = 1  # 1 = playing, 0 = game over
+
     pygame.display.set_caption("Hoard of Freaks")
 
-
+    def reset_game():
+        nonlocal freaks, bullets, freak_spawn_timer, game_state
+        freaks = []
+        bullets = []
+        freak_spawn_timer = 0
+        game_state = 1
+        
   
     
     clock = pygame.time.Clock()
