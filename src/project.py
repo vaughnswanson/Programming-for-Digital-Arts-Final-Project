@@ -13,7 +13,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived):
     
-    max_points = 1 + int(seconds_survived // 10)  # Increase max points every 30 seconds
+    max_points = 1 + int(seconds_survived // 10)  # Increase max points every 10 seconds
     #give enemy random skill points 
     EnemyTotalPoints = random.randint(1, max_points)
     
@@ -278,7 +278,7 @@ def main():
                                 #increment freaks killed
                                 freaks_killed += 1
                                 if freaks_killed % 10 == 0:
-                                     turret.set_fire_rate(turret.fire_rate + 0.5)
+                                     turret.set_fire_rate(turret.fire_rate + 0.3) #increase fire rate every 10 freaks killed
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
@@ -305,7 +305,7 @@ def main():
 
                 #spawn freaks
                 freak_spawn_timer += dt
-                freak_spawn_rate = 0.5 + (seconds_survived // 30) * 0.1  # Increase spawn rate every 10 seconds
+                freak_spawn_rate = 0.5 + (seconds_survived // 10) * 0.3  # Increase spawn rate every 10 seconds
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
                     
