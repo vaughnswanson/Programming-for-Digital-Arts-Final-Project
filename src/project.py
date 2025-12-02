@@ -13,7 +13,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived):
     
-    max_points = 1 + int(seconds_survived // 60)  # Increase max points every 60 seconds
+    max_points = 1 + int(seconds_survived // 10)  # Increase max points every 30 seconds
     #give enemy random skill points 
     EnemyTotalPoints = random.randint(1, max_points)
     
@@ -114,16 +114,16 @@ class Bullet():
         screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
-    def __init__ (self, pos=(0,0), fire_rate=2,):
+    def __init__ (self, pos=(0,0), fire_rate=1):
         self.pos = pos
-        self.fire_rate = fire_rate  # bullets per second
-        self.shot_timer = 0 # time since last shot
-        self.cooldown = .5 / fire_rate # seconds between shots
-      
-        self.last_shot_time = 0
+        self.fire_rate = fire_rate
+
+        #fire rate control
+        self.shot_timer = 0
+        self.cooldown = 1 / fire_rate  # 1/fire_rate seconds between shots
+
         #load sprite
         self.sprite = pygame.image.load(f"assets/images/turret.png").convert_alpha()
-        #scale sprite
         self.sprite = pygame.transform.scale(self.sprite, (96,96))
         self.sprite2 = pygame.image.load(f"assets/images/turret_housing.png").convert_alpha()
         self.sprite2 = pygame.transform.scale(self.sprite2, (96,96))
@@ -133,6 +133,9 @@ class Turret():
         self.pos = (50 , resolution[1]//2)
         self.rect = self.sprite.get_rect(center=self.pos)
 
+    def set_fire_rate(self, fire_rate):
+        self.fire_rate = fire_rate
+        self.cooldown = .5 / fire_rate
     def can_fire(self):
         if self.shot_timer >= self.cooldown:
             self.shot_timer = 0
@@ -165,16 +168,24 @@ def main():
     pygame.display.set_caption("Hoard of Freaks")
 
     def reset_game():
-        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed
+        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret
+
         freaks = []
         bullets = []
         seconds_survived = 0
         game_state = 1
-        clock.tick()  # Reset clock to avoid large dt on restart
+        clock.tick()  # avoid huge dt
         freak_spawn_rate = 0.5
         freaks_killed = 0
-        
         freak_spawn_timer = 0
+
+        turret.position(resolution)  
+        turret.set_fire_rate(1)     
+
+
+
+    freak_spawn_timer = 0
+
     #keep track of freaks killed
     freaks_killed = 0
 
@@ -266,6 +277,8 @@ def main():
                                 pygame.mixer.Sound(active_audio_death).play()
                                 #increment freaks killed
                                 freaks_killed += 1
+                                if freaks_killed % 10 == 0:
+                                     turret.set_fire_rate(turret.fire_rate + 0.5)
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
