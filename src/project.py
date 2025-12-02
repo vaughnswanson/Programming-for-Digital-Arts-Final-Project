@@ -112,7 +112,7 @@ class Bullet():
         screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
-    def __init__ (self, pos=(0,0), fire_rate=5,):
+    def __init__ (self, pos=(0,0), fire_rate=2,):
         self.pos = pos
         self.fire_rate = fire_rate  # bullets per second
         self.shot_timer = 0 # time since last shot
@@ -163,13 +163,14 @@ def main():
     pygame.display.set_caption("Hoard of Freaks")
 
     def reset_game():
-        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate
+        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed
         freaks = []
         bullets = []
         seconds_survived = 0
         game_state = 1
         clock.tick()  # Reset clock to avoid large dt on restart
         freak_spawn_rate = 0.5
+        freaks_killed = 0
         
         freak_spawn_timer = 0
     #keep track of freaks killed
@@ -261,6 +262,8 @@ def main():
                             else:
                                 active_audio_death = pick_audio("die", 3)
                                 pygame.mixer.Sound(active_audio_death).play()
+                                #increment freaks killed
+                                freaks_killed += 1
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
@@ -287,7 +290,7 @@ def main():
 
                 #spawn freaks
                 freak_spawn_timer += dt
-                freak_spawn_rate = 0.5 + (seconds_survived // 10) * 0.1  # Increase spawn rate every 10 seconds
+                freak_spawn_rate = 0.5 + (seconds_survived // 30) * 0.1  # Increase spawn rate every 10 seconds
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
                     
@@ -309,6 +312,16 @@ def main():
             clock.tick(60)
             background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
             screen.blit(background, (0,0))
+            # Draw freaks killed counter
+            font = pygame.font.SysFont("Arial", 40)
+            freaks_killed_text = font.render(f"Freaks Killed: {freaks_killed}", True, (255, 255, 255))
+            text_rect = freaks_killed_text.get_rect(center=(resolution[0] // 2, 800))  
+            screen.blit(freaks_killed_text, text_rect)
+            # Draw timer below freaks killed
+            seconds_text = font.render(f"Time Survived: {int(seconds_survived)}s", True, (255, 255, 255))
+            seconds_rect = seconds_text.get_rect(center=(resolution[0] // 2, 850))  # 50 pixels below
+            screen.blit(seconds_text, seconds_rect)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
