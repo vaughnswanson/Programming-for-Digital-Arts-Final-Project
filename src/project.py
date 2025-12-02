@@ -3,7 +3,7 @@ import random
 import math
 
 
-#TODO restart when player hits enter on loose screen
+
 #TODO Implement score system based on number of freaks killed
 #TODO Implement levels with increasing freak spawn rates and speeds
 # luxuary TODOs:
@@ -31,7 +31,6 @@ def EnemyHealthSpeedGenerator():
 def pick_freak():
     num = random.randrange(1,6)
     return f"freak{num}.png"
-
 
 def pick_audio(filename, filenum_range):
 
@@ -81,14 +80,19 @@ class Freak():
 
 class Bullet():
     def __init__(self, pos=(0,0), direction=(0,0), speed=10):
-        self.pos = pos
-        self.direction = direction
+        self.pos = pygame.math.Vector2(pos)
+        self.direction = pygame.math.Vector2(direction).normalize() #point the bullet in the correct direction
         self.speed = speed
         self.alive = True
-        #load sprite
-        self.sprite = pygame.image.load(f"assets/images/bullet.png").convert_alpha()
+        #load sprite and preserve it for rotation
+        self.sprite_base = pygame.image.load(f"assets/images/bullet.png").convert_alpha()
         #scale sprite
-        self.sprite = pygame.transform.scale(self.sprite, (32,32))
+        self.sprite_base = pygame.transform.scale(self.sprite_base, (32,32))
+        #create sprite for rotation
+        self.sprite = self.sprite_base
+        #calculate rotation angle
+        self.rotation = math.degrees(math.atan2(self.direction.y, self.direction.x))
+
         #give sprite hitbox 
         self.rect = self.sprite.get_rect(topleft=pos)
             
@@ -104,6 +108,7 @@ class Bullet():
     
     def draw(self, screen):
         
+        self.sprite = pygame.transform.rotate(self.sprite_base, - self.rotation)
         screen.blit(self.sprite, self.rect.topleft) 
 
 class Turret():
@@ -232,7 +237,7 @@ def main():
                         turret_x, turret_y = turret.pos
                         angle = math.atan2(mouse_y - turret_y, mouse_x - turret_x)
                         direction = pygame.math.Vector2(math.cos(angle), math.sin(angle))
-                        bullet = Bullet(pos=turret.pos, direction=direction, speed=2000)
+                        bullet = Bullet(pos=turret.pos, direction=direction, speed=1000)
                         bullets.append(bullet)
                         active_audio_fire = pick_audio("fire", 3)
                         pygame.mixer.Sound(active_audio_fire).play()
