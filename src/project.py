@@ -11,9 +11,11 @@ import math
 #TODO add live score of freaks killed on screen
 #TODO add live timer on screen
 
-def EnemyHealthSpeedGenerator():
-    #give enemy random skill points from 1 to 5
-    EnemyTotalPoints = random.randint(1, 12)
+def EnemyHealthSpeedGenerator(seconds_survived):
+    
+    max_points = 1 + int(seconds_survived // 60)  # Increase max points every 60 seconds
+    #give enemy random skill points 
+    EnemyTotalPoints = random.randint(1, max_points)
     
     #set base speed and health
     health = 1
@@ -42,9 +44,9 @@ def pick_audio(filename, filenum_range):
 
 class Freak():
 
-    def __init__(self, pos=(0,0)):
+    def __init__(self, pos=(0,0), seconds_survived=0):
         self.pos = pos
-        self.health, self.speed = EnemyHealthSpeedGenerator()
+        self.health, self.speed = EnemyHealthSpeedGenerator(seconds_survived)
         self.alive = True
         
         #load sprite
@@ -294,9 +296,10 @@ def main():
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
                     
+
                     #spawn freak at random y position on right side of screen
-                    y = random.choice(range(0, resolution[1]-96,96))
-                    freaks.append(Freak(pos=(resolution[0], y)))
+                    y = random.choice(range(0, resolution[1]-96,96))                
+                    freaks.append(Freak(pos=(resolution[0], y), seconds_survived=seconds_survived))
                 
                 #delete dead freaks
                 freaks = [freak for freak in freaks if freak.alive]
