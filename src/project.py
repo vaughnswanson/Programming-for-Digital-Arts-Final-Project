@@ -13,7 +13,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived):
     
-    max_points = 1 + int(seconds_survived // 15)  # Increase max points every 15 seconds
+    max_points = 1 + int(seconds_survived // 20)  # Increase max points every 20 seconds
     #give enemy random skill points 
     EnemyTotalPoints = random.randint(1, max_points)
     
