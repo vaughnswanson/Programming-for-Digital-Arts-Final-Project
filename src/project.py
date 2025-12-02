@@ -13,7 +13,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived):
     
-    max_points = 1 + int(seconds_survived // 10)  # Increase max points every 10 seconds
+    max_points = 1 + int(seconds_survived // 15)  # Increase max points every 15 seconds
     #give enemy random skill points 
     EnemyTotalPoints = random.randint(1, max_points)
     
@@ -168,7 +168,7 @@ def main():
     pygame.display.set_caption("Hoard of Freaks")
 
     def reset_game():
-        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret
+        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound
 
         freaks = []
         bullets = []
@@ -178,25 +178,17 @@ def main():
         freak_spawn_rate = 0.5
         freaks_killed = 0
         freak_spawn_timer = 0
+        played_lose_sound = False
 
         turret.position(resolution)  
         turret.set_fire_rate(1)     
 
 
-
+    played_lose_sound = False
     freak_spawn_timer = 0
 
     #keep track of freaks killed
     freaks_killed = 0
-
-    #keep track of bullets fired
-    bullets_fired = 0
-    
-    #keep track of hits
-    hits = 0
-    
-    #keep track of accuracy
-    accuracy = 0
 
     #keep track of seconds survived
     seconds_survived = 0
@@ -278,7 +270,7 @@ def main():
                                 #increment freaks killed
                                 freaks_killed += 1
                                 if freaks_killed % 10 == 0:
-                                     turret.set_fire_rate(turret.fire_rate + 0.3) #increase fire rate every 10 freaks killed
+                                     turret.set_fire_rate(turret.fire_rate + 0.2) #increase fire rate every 10 freaks killed
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
@@ -295,7 +287,6 @@ def main():
                     
                     if freak.pos[0] <= 0:
                         health -= 1
-                        pygame.mixer.Sound("assets/audio/lose").play()
                         freak.alive = False
 
                         if health <= 0:
@@ -305,7 +296,7 @@ def main():
 
                 #spawn freaks
                 freak_spawn_timer += dt
-                freak_spawn_rate = 0.5 + (seconds_survived // 10) * 0.3  # Increase spawn rate every 10 seconds
+                freak_spawn_rate = 0.5 + (seconds_survived // 10) * 0.2  # Increase spawn rate every 10 seconds
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
                     
@@ -324,7 +315,10 @@ def main():
                 pygame.display.flip()
 
         elif game_state == 0:
-            
+            if not played_lose_sound:
+                pygame.mixer.Sound("assets/audio/lose").play()
+                played_lose_sound = True
+
             clock.tick(60)
             background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
             screen.blit(background, (0,0))
