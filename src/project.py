@@ -168,10 +168,11 @@ def main():
     pygame.display.set_caption("Hoard of Freaks")
 
     def reset_game():
-        nonlocal freaks, bullets, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound
+        nonlocal freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound
 
         freaks = []
         bullets = []
+        bullet_damage = 1
         seconds_survived = 0
         game_state = 1
         clock.tick()  # avoid huge dt
@@ -182,7 +183,6 @@ def main():
 
         turret.position(resolution)  
         turret.set_fire_rate(1)     
-
 
     played_lose_sound = False
     freak_spawn_timer = 0
@@ -214,6 +214,7 @@ def main():
     turret = Turret()
     turret.position(resolution) 
     bullets = []
+    bullet_damage = 1
 
     #health stats
     health = 1
@@ -270,7 +271,16 @@ def main():
                                 #increment freaks killed
                                 freaks_killed += 1
                                 if freaks_killed % 10 == 0:
+                                     active_audio_levelup = pick_audio("levelup", 2)
+                                     pygame.mixer.Sound(active_audio_levelup).play()
                                      turret.set_fire_rate(turret.fire_rate + 0.2) #increase fire rate every 10 freaks killed
+                                #increase bullet damage every 100 freaks killed
+                                if freaks_killed % 100 == 0:
+                                    active_audio_levelup = pick_audio("levelup", 2)
+                                    pygame.mixer.Sound(active_audio_levelup).play()
+                                    bullet_damage += 1
+                                        
+                                    
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
