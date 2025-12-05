@@ -16,7 +16,8 @@ There are several things that I want to add. such as upgrades, like peircing bul
 
 in the assets fileyou will find all of the assets for the game.
 
-
+Youtube video:
+https://www.youtube.com/watch?v=tLoRmBADLA0
 
 GitHub:
 https://github.com/vaughnswanson/Programming-for-Digital-Arts-Final-Project
