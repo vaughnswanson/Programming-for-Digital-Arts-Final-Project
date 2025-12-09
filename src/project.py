@@ -12,6 +12,7 @@ def EnemyHealthSpeedGenerator(seconds_survived, difficulty_multiplyer):
     
     max_points = 1 + int(seconds_survived // 20)* difficulty_multiplyer  # Increase max points every 20 seconds
     min_points = (max_points // 2) +1
+   
     #give enemy random skill points 
     EnemyTotalPoints = random.randint(min_points, max_points)
     
@@ -49,8 +50,10 @@ class Freak():
         
         #load sprite
         self.sprite = pygame.image.load(f"assets/images/{pick_freak()}").convert_alpha()
+       
         #scale sprite
         self.sprite = pygame.transform.scale(self.sprite, (96,96))
+        
         #give sprite hitbox
         self.rect = self.sprite.get_rect(topleft=pos)
         
@@ -84,12 +87,16 @@ class Bullet():
         self.direction = pygame.math.Vector2(direction).normalize() #point the bullet in the correct direction
         self.speed = speed
         self.alive = True
+       
         #load sprite and preserve it for rotation
         self.sprite_base = pygame.image.load(f"assets/images/bullet.png").convert_alpha()
+        
         #scale sprite
         self.sprite_base = pygame.transform.scale(self.sprite_base, (32,32))
+        
         #create sprite for rotation
         self.sprite = self.sprite_base
+        
         #calculate rotation angle
         self.rotation = math.degrees(math.atan2(self.direction.y, self.direction.x))
 
@@ -144,6 +151,7 @@ class Turret():
         #draw the turret rotated to face the mouse
         rotated_sprite = pygame.transform.rotate(self.sprite, -self.rotation)
         screen.blit(rotated_sprite, rotated_sprite.get_rect(center=self.pos))
+        
         #draw the turret housing
         screen.blit(self.sprite2, self.sprite2.get_rect(center=self.pos))
     
@@ -151,6 +159,7 @@ class Turret():
     def update(self, dt):
         #update turret to face mouse
         self.shot_timer += dt
+        
         #get mouse position    
         mouse_x, mouse_y = pygame.mouse.get_pos()
         turret_x, turret_y = self.pos
@@ -165,6 +174,7 @@ def main():
 
     pygame.display.set_caption("Hoard of Freaks")
 
+    #reset stats on new game function
     def reset_game():
         nonlocal freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound, difficulty_multiplier
 
@@ -222,13 +232,12 @@ def main():
     #background image
     background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
 
+    #main game loop
     while running :
         if game_state == 1:
                 #set delta time
                 dt = clock.tick(60) / 1000 
                 seconds_survived += dt
-                #apply background
-                
                 
                 #event loop
                 for event in pygame.event.get():
@@ -254,7 +263,6 @@ def main():
                     
                 screen.blit(background, (0,0))
 
-            
                 #update bullets
                 for bullet in bullets:
                     bullet.update(dt, resolution)
@@ -262,26 +270,37 @@ def main():
                     
                     #check for collision with freaks
                     for freak in freaks:
+                        #if bullet collides with freak deal damage
                         if bullet.rect.colliderect(freak.rect):
                             freak.health -= bullet_damage
                             bullet.alive = False 
+                            
+                            #play hurt sound
                             if freak.health > 0:
                                 active_audio_hurt = pick_audio("hurt", 3)
                                 pygame.mixer.Sound(active_audio_hurt).play()
+                            
+                            #play death sound and on death events
                             else:
                                 active_audio_death = pick_audio("die", 3)
                                 pygame.mixer.Sound(active_audio_death).play()
-                                #increment freaks killed
+                                
+                                #track freaks killed
                                 freaks_killed += 1
+                                
+                                #increase fire rate every 10 freaks killed
                                 if freaks_killed % 10 == 0:
                                      active_audio_levelup = pick_audio("levelup", 2)
                                      pygame.mixer.Sound(active_audio_levelup).play()
-                                     turret.set_fire_rate(turret.fire_rate + 0.1) #increase fire rate every 10 freaks killed
+                                     turret.set_fire_rate(turret.fire_rate + 0.1) 
+                                
                                 #increase bullet damage every 75 freaks killed
                                 if freaks_killed % 50 == 0:
                                     active_audio_levelup = pick_audio("levelup", 2)
                                     pygame.mixer.Sound(active_audio_levelup).play()
                                     bullet_damage += .5
+                                
+                                #increase difficulty every 500 freaks killed
                                 if freaks_killed % 500 == 0:
                                     difficulty_multiplier += .5
                                     
@@ -306,14 +325,11 @@ def main():
                         if health <= 0:
                             game_state = 0
                         
-                        
-
                 #spawn freaks
                 freak_spawn_timer += dt
                 freak_spawn_rate = 0.5 + (seconds_survived // 60) * difficulty_multiplier # Increase spawn rate every 30 seconds
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
-                    
 
                     #spawn freak at random y position on right side of screen
                     y = random.choice(range(0, resolution[1]-96,96))                
@@ -327,7 +343,8 @@ def main():
                     freak.draw(screen)
 
                 pygame.display.flip()
-
+        
+        # Game Over Screen
         elif game_state == 0:
             if not played_lose_sound:
                 pygame.mixer.Sound("assets/audio/lose").play()
@@ -336,11 +353,13 @@ def main():
             clock.tick(60)
             background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
             screen.blit(background, (0,0))
+            
             # Draw freaks killed counter
             font = pygame.font.SysFont("Arial", 40)
             freaks_killed_text = font.render(f"Freaks Killed: {freaks_killed}", True, (255, 255, 255))
             text_rect = freaks_killed_text.get_rect(center=(resolution[0] // 2, 800))  
             screen.blit(freaks_killed_text, text_rect)
+            
             # Draw timer below freaks killed
             seconds_text = font.render(f"Time Survived: {int(seconds_survived)}s", True, (255, 255, 255))
             seconds_rect = seconds_text.get_rect(center=(resolution[0] // 2, 850))  # 50 pixels below
