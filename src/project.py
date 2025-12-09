@@ -205,7 +205,7 @@ def main():
     
     difficulty_multiplier = 1
    
-    #make the background black
+    #make the background
     background = pygame.Surface(resolution)
     background.fill((0, 0, 0))
     background = pygame.transform.scale(background, resolution)
@@ -219,14 +219,17 @@ def main():
     #health stats
     health = 1
 
+    #background image
+    background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
 
     while running :
         if game_state == 1:
                 #set delta time
                 dt = clock.tick(60) / 1000 
                 seconds_survived += dt
-                #set background
-                background = pygame.image.load("assets/images/HoardOfFreaks_Background.png").convert()
+                #apply background
+                
+                
                 #event loop
                 for event in pygame.event.get():
                     #use quit to close program
