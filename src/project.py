@@ -22,6 +22,7 @@ def EnemyHealthSpeedGenerator(seconds_survived, difficulty_multiplyer):
     
     #distribute points randomly between health and speed
     for _ in range(EnemyTotalPoints):
+       
         if random.choice([True, False]):
             health += 1
         else:
@@ -351,8 +352,8 @@ def main():
                 played_lose_sound = True
 
             clock.tick(60)
-            background = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
-            screen.blit(background, (0,0))
+            background_gameover = pygame.image.load("assets/images/HoardOfFreaks_Gameover.png").convert()
+            screen.blit(background_gameover, (0,0))
             
             # Draw freaks killed counter
             font = pygame.font.SysFont("Arial", 40)
