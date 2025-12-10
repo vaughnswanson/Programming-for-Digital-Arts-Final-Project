@@ -10,7 +10,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived, difficulty_multiplyer):
     
-    max_points = 1 + int(seconds_survived // 20)* difficulty_multiplyer  # Increase max points every 00 seconds
+    max_points = 1 + int(seconds_survived // 25)* difficulty_multiplyer  # Increase max points every 00 seconds
     min_points = (max_points // 2) +1
    
     #give enemy random skill points 
@@ -177,7 +177,7 @@ def main():
 
     #reset stats on new game function
     def reset_game():
-        nonlocal freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound, difficulty_multiplier, damage_tier, spawn_tier, fire_rate_tier, difficulty_tier
+        nonlocal health, freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound, difficulty_multiplier, damage_tier, spawn_tier, fire_rate_tier, difficulty_tier
 
         freaks = []
         bullets = []
@@ -194,6 +194,8 @@ def main():
         spawn_tier = 0
         fire_rate_tier = 0
         difficulty_tier = 0
+         
+        health = 1
 
         turret.position(resolution)  
         turret.set_fire_rate(1)     
@@ -301,9 +303,9 @@ def main():
                                 freaks_killed += 1
                                 
                                 # cap fire rate increase
-                                if fire_rate < 3:
+                                if fire_rate < 5:
                                     #increase fire rate every 10 freaks killed
-                                    if freaks_killed // 10 > fire_rate_tier:
+                                    if freaks_killed // 20 > fire_rate_tier:
                                         fire_rate_tier += 1
                                         active_audio_levelup = pick_audio("levelup", 2)
                                         pygame.mixer.Sound(active_audio_levelup).play()
@@ -312,17 +314,36 @@ def main():
                                         
                                 
                                 #increase bullet damage every 75 freaks killed
-                                if freaks_killed // 50 > damage_tier:
+                                if freaks_killed // 75 > damage_tier:
                                     damage_tier += 1
                                     active_audio_levelup = pick_audio("levelup", 2)
                                     pygame.mixer.Sound(active_audio_levelup).play()
-                                    bullet_damage += 1
+                                    bullet_damage += .2
                                 
                                 #increase difficulty every 500 freaks killed
                                 if freaks_killed // 500 > difficulty_tier:
                                     difficulty_tier += 1
                                     difficulty_multiplier += .5
-                                    
+                font = pygame.font.SysFont("Arial", 40)
+                #draw end bullet damage
+                bullet_damage_text = font.render(f"Final Bullet Damage: {bullet_damage}", True, (255, 255, 255))
+                bullet_damage_rect = bullet_damage_text.get_rect(center=(resolution[0] // 2, 150))  # 50 pixels below
+                screen.blit(bullet_damage_text, bullet_damage_rect)
+
+                # draw final fire rate
+                fire_rate_text = font.render(f"Final Fire Rate: {round(fire_rate,2)}", True, (255, 255, 255))
+                fire_rate_rect = fire_rate_text.get_rect(center=(resolution[0] // 2, 100))  # 50 pixels below
+                screen.blit(fire_rate_text, fire_rate_rect)
+
+                #draw freaks spawn rate
+                spawn_rate_text = font.render(f"Final Freak Spawn Rate: {round(freak_spawn_rate,2)}", True, (255, 255, 255))
+                spawn_rate_rect = spawn_rate_text.get_rect(center=(resolution[0] // 2, 50))  # 50 pixels below
+                screen.blit(spawn_rate_text, spawn_rate_rect)
+                # draw max points
+                max_points = 1 + int(seconds_survived // 30)* difficulty_multiplier
+                max_points_text = font.render(f"Max Freak Points: {max_points}", True, (255, 255, 255))
+                max_points_rect = max_points_text.get_rect(center=(resolution[0] // 2, 200))  # 50 pixels below
+                screen.blit(max_points_text, max_points_rect)                 
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
@@ -348,11 +369,11 @@ def main():
                 freak_spawn_timer += dt
                 
                 #cap spawn rate
-                if freak_spawn_rate < 20:
+                if freak_spawn_rate < 10:
                    # increase freak spawn rate once by .1 every 15 seconds survived
-                     if freaks_killed // 10 > spawn_tier:
+                     if seconds_survived // 15 > spawn_tier:
                         spawn_tier += 1
-                        freak_spawn_rate += .5
+                        freak_spawn_rate += .2
                  
                
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
@@ -392,6 +413,26 @@ def main():
             seconds_rect = seconds_text.get_rect(center=(resolution[0] // 2, 850))  # 50 pixels below
             screen.blit(seconds_text, seconds_rect)
 
+            #draw end bullet damage
+            bullet_damage_text = font.render(f"Final Bullet Damage: {bullet_damage}", True, (255, 255, 255))
+            bullet_damage_rect = bullet_damage_text.get_rect(center=(resolution[0] // 2, 150))  # 50 pixels below
+            screen.blit(bullet_damage_text, bullet_damage_rect)
+
+            # draw final fire rate
+            fire_rate_text = font.render(f"Final Fire Rate: {round(fire_rate,2)}", True, (255, 255, 255))
+            fire_rate_rect = fire_rate_text.get_rect(center=(resolution[0] // 2, 100))  # 50 pixels below
+            screen.blit(fire_rate_text, fire_rate_rect)
+
+            #draw freaks spawn rate
+            spawn_rate_text = font.render(f"Final Freak Spawn Rate: {round(freak_spawn_rate,2)}", True, (255, 255, 255))
+            spawn_rate_rect = spawn_rate_text.get_rect(center=(resolution[0] // 2, 50))  # 50 pixels below
+            screen.blit(spawn_rate_text, spawn_rate_rect)
+            # draw max points
+            max_points = 1 + int(seconds_survived // 30)* difficulty_multiplier
+            max_points_text = font.render(f"Max Freak Points: {max_points}", True, (255, 255, 255))
+            max_points_rect = max_points_text.get_rect(center=(resolution[0] // 2, 200))  # 50 pixels below
+            screen.blit(max_points_text, max_points_rect)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -400,7 +441,7 @@ def main():
                         game_state = 1
                         reset_game()
                         health = 1
-                pygame.display.flip()
+            pygame.display.flip()
 
 if __name__ == "__main__":
     main()
