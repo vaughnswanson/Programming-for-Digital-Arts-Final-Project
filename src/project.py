@@ -10,7 +10,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived, difficulty_multiplyer):
     
-    max_points = 1 + int(seconds_survived // 20)* difficulty_multiplyer  # Increase max points every 20 seconds
+    max_points = 1 + int(seconds_survived // 20)* difficulty_multiplyer  # Increase max points every 00 seconds
     min_points = (max_points // 2) +1
    
     #give enemy random skill points 
@@ -177,7 +177,7 @@ def main():
 
     #reset stats on new game function
     def reset_game():
-        nonlocal freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound, difficulty_multiplier
+        nonlocal freaks, bullets,bullet_damage, freak_spawn_timer, game_state, seconds_survived, freak_spawn_rate, freaks_killed, turret, played_lose_sound, difficulty_multiplier, damage_tier, spawn_tier, fire_rate_tier, difficulty_tier
 
         freaks = []
         bullets = []
@@ -190,9 +190,18 @@ def main():
         freak_spawn_timer = 0
         played_lose_sound = False
         difficulty_multiplier = 1
+        damage_tier = 0
+        spawn_tier = 0
+        fire_rate_tier = 0
+        difficulty_tier = 0
 
         turret.position(resolution)  
         turret.set_fire_rate(1)     
+
+    damage_tier = 0
+    spawn_tier = 0
+    fire_rate_tier = 0
+    difficulty_tier = 0
 
     played_lose_sound = False
     freak_spawn_timer = 0
@@ -212,6 +221,7 @@ def main():
         
     #freak spawn timer
     freak_spawn_timer = 0
+    freak_spawn_rate = 0.5  # freaks per second
     freaks = []
     
     difficulty_multiplier = 1
@@ -226,6 +236,7 @@ def main():
     turret.position(resolution) 
     bullets = []
     bullet_damage = 1
+    fire_rate = 1
 
     #health stats
     health = 1
@@ -289,20 +300,27 @@ def main():
                                 #track freaks killed
                                 freaks_killed += 1
                                 
-                                #increase fire rate every 10 freaks killed
-                                if freaks_killed % 10 == 0:
-                                     active_audio_levelup = pick_audio("levelup", 2)
-                                     pygame.mixer.Sound(active_audio_levelup).play()
-                                     turret.set_fire_rate(turret.fire_rate + 0.1) 
+                                # cap fire rate increase
+                                if fire_rate < 3:
+                                    #increase fire rate every 10 freaks killed
+                                    if freaks_killed // 10 > fire_rate_tier:
+                                        fire_rate_tier += 1
+                                        active_audio_levelup = pick_audio("levelup", 2)
+                                        pygame.mixer.Sound(active_audio_levelup).play()
+                                        fire_rate += .2
+                                        turret.set_fire_rate(fire_rate)
+                                        
                                 
                                 #increase bullet damage every 75 freaks killed
-                                if freaks_killed % 50 == 0:
+                                if freaks_killed // 50 > damage_tier:
+                                    damage_tier += 1
                                     active_audio_levelup = pick_audio("levelup", 2)
                                     pygame.mixer.Sound(active_audio_levelup).play()
-                                    bullet_damage += .5
+                                    bullet_damage += 1
                                 
                                 #increase difficulty every 500 freaks killed
-                                if freaks_killed % 500 == 0:
+                                if freaks_killed // 500 > difficulty_tier:
+                                    difficulty_tier += 1
                                     difficulty_multiplier += .5
                                     
 
@@ -328,7 +346,15 @@ def main():
                         
                 #spawn freaks
                 freak_spawn_timer += dt
-                freak_spawn_rate = 0.5 + (seconds_survived // 60) * difficulty_multiplier # Increase spawn rate every 30 seconds
+                
+                #cap spawn rate
+                if freak_spawn_rate < 20:
+                   # increase freak spawn rate once by .1 every 15 seconds survived
+                     if freaks_killed // 10 > spawn_tier:
+                        spawn_tier += 1
+                        freak_spawn_rate += .5
+                 
+               
                 while freak_spawn_timer >= 1 / freak_spawn_rate:
                     freak_spawn_timer -= 1 / freak_spawn_rate       
 
