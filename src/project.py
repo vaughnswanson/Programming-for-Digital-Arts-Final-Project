@@ -10,7 +10,7 @@ import math
 
 def EnemyHealthSpeedGenerator(seconds_survived, difficulty_multiplyer):
     
-    max_points = 1 + int(seconds_survived // 25)* difficulty_multiplyer  # Increase max points every 00 seconds
+    max_points = 1 + int(seconds_survived // 35)* difficulty_multiplyer  # Increase max points every 00 seconds
     min_points = (max_points // 2) +1
    
     #give enemy random skill points 
@@ -323,27 +323,7 @@ def main():
                                 #increase difficulty every 500 freaks killed
                                 if freaks_killed // 500 > difficulty_tier:
                                     difficulty_tier += 1
-                                    difficulty_multiplier += .5
-                font = pygame.font.SysFont("Arial", 40)
-                #draw end bullet damage
-                bullet_damage_text = font.render(f"Final Bullet Damage: {bullet_damage}", True, (255, 255, 255))
-                bullet_damage_rect = bullet_damage_text.get_rect(center=(resolution[0] // 2, 150))  # 50 pixels below
-                screen.blit(bullet_damage_text, bullet_damage_rect)
-
-                # draw final fire rate
-                fire_rate_text = font.render(f"Final Fire Rate: {round(fire_rate,2)}", True, (255, 255, 255))
-                fire_rate_rect = fire_rate_text.get_rect(center=(resolution[0] // 2, 100))  # 50 pixels below
-                screen.blit(fire_rate_text, fire_rate_rect)
-
-                #draw freaks spawn rate
-                spawn_rate_text = font.render(f"Final Freak Spawn Rate: {round(freak_spawn_rate,2)}", True, (255, 255, 255))
-                spawn_rate_rect = spawn_rate_text.get_rect(center=(resolution[0] // 2, 50))  # 50 pixels below
-                screen.blit(spawn_rate_text, spawn_rate_rect)
-                # draw max points
-                max_points = 1 + int(seconds_survived // 30)* difficulty_multiplier
-                max_points_text = font.render(f"Max Freak Points: {max_points}", True, (255, 255, 255))
-                max_points_rect = max_points_text.get_rect(center=(resolution[0] // 2, 200))  # 50 pixels below
-                screen.blit(max_points_text, max_points_rect)                 
+                                    difficulty_multiplier += .5                 
 
                 #delete dead bullets
                 bullets = [bullet for bullet in bullets if bullet.alive]
